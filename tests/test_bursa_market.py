@@ -81,3 +81,37 @@ def test_bursa_lunch_break():
     assert infer_market_phase(
         "my", current_time=lunchtime
     ) == MarketPhase.LUNCH_BREAK
+    
+def test_bursa_full_trading_session():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from src.core.trading_calendar import (
+        infer_market_phase,
+        MarketPhase,
+    )
+
+    tz = ZoneInfo("Asia/Kuala_Lumpur")
+
+    cases = [
+        (8, 0, MarketPhase.PREMARKET),
+        (11, 0, MarketPhase.INTRADAY),
+        (13, 0, MarketPhase.LUNCH_BREAK),
+        (15, 0, MarketPhase.INTRADAY),
+        (17, 30, MarketPhase.POSTMARKET),
+    ]
+
+    for hour, minute, expected in cases:
+        now = datetime(
+            2026, 11, 5, hour, minute,
+            tzinfo=tz,
+        )
+
+        actual = infer_market_phase(
+            "my", current_time=now
+        )
+
+        assert actual == expected, (
+            f"{hour:02d}:{minute:02d}: "
+            f"expected {expected}, got {actual}"
+        )
+
