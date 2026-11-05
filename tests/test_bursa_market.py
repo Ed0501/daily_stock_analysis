@@ -51,3 +51,16 @@ def test_bursa_data_source_routing():
         "YfinanceFetcher"
     ]
 
+def test_bursa_trading_calendar_config():
+    from src.core.trading_calendar import (
+        MARKET_EXCHANGE,
+        MARKET_TIMEZONE,
+        get_market_for_stock,
+    )
+
+    assert MARKET_EXCHANGE["my"] == "XKLS"
+    assert MARKET_TIMEZONE["my"] == "Asia/Kuala_Lumpur"
+
+    for symbol in ("4456.KL", "5323.KL", "8524.KL"):
+        assert get_market_for_stock(symbol) == "my"
+
