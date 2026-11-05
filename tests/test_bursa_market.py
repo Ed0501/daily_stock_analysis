@@ -115,3 +115,23 @@ def test_bursa_full_trading_session():
             f"expected {expected}, got {actual}"
         )
 
+def test_bursa_weekend_closed():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from src.core.trading_calendar import (
+        infer_market_phase,
+        MarketPhase,
+    )
+
+    tz = ZoneInfo("Asia/Kuala_Lumpur")
+
+    for day in (7, 8):
+        now = datetime(
+            2026, 11, day, 11, 0,
+            tzinfo=tz,
+        )
+
+        assert infer_market_phase(
+            "my", current_time=now
+        ) == MarketPhase.NON_TRADING
+
