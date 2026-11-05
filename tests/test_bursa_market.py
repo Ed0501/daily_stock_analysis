@@ -30,3 +30,24 @@ def test_bursa_stock_input_parser():
         assert result.asset_type == "stock"
         assert result.canonical_id == symbol
         assert normalize_code(symbol) == symbol
+        
+def test_bursa_data_source_routing():
+    from types import SimpleNamespace
+    from data_provider.base import DataFetcherManager, normalize_stock_code
+
+    assert normalize_stock_code("4456.kl") == "4456.KL"
+
+    fetchers = [
+        SimpleNamespace(name="AkshareFetcher"),
+        SimpleNamespace(name="TencentFetcher"),
+        SimpleNamespace(name="YfinanceFetcher"),
+    ]
+
+    selected = DataFetcherManager._filter_daily_fetchers_for_market(
+        fetchers, "my"
+    )
+
+    assert [fetcher.name for fetcher in selected] == [
+        "YfinanceFetcher"
+    ]
+
