@@ -48,6 +48,8 @@ MARKET_TIMEZONE = {
     "jp": "Asia/Tokyo",
     "kr": "Asia/Seoul",
     "tw": "Asia/Taipei",
+    "my": "Asia/Kuala_Lumpur",
+
 }
 
 # P0 market phase baseline (Issue #1386). This is an intentionally small
