@@ -38,7 +38,17 @@ except ImportError:
     )
 
 # Market -> exchange code (exchange-calendars)
-MARKET_EXCHANGE = {"cn": "XSHG", "hk": "XHKG", "us": "XNYS", "jp": "XTKS", "kr": "XKRX", "tw": "XTAI"}
+
+MARKET_EXCHANGE = {
+    "cn": "XSHG",
+    "hk": "XHKG",
+    "us": "XNYS",
+    "jp": "XTKS",
+    "kr": "XKRX",
+    "tw": "XTAI",
+    "my": "XKLS",
+}
+
 
 # Market -> IANA timezone for "today"
 MARKET_TIMEZONE = {
