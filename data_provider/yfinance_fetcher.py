@@ -119,6 +119,14 @@ class YfinanceFetcher(BaseFetcher):
             'AAPL'
         """
         code = stock_code.strip().upper()
+        
+        # Bursa Malaysia: preserve Yahoo Finance .KL symbols
+        if code.endswith(".KL"):
+            base = code[:-3]
+            if base.isdigit() and len(base) in (4, 5):
+                return code
+            raise ValueError(f"Invalid Bursa Malaysia symbol: {code}")
+
 
         # 美股指数：映射到 Yahoo Finance 符号（如 SPX -> ^GSPC）
         yf_symbol, _ = get_us_index_yf_symbol(code)
