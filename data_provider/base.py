@@ -252,6 +252,8 @@ def _market_tag(code: str) -> str:
         return "kr"
     if _is_tw_market(code):
         return "tw"
+    if is_suffix_market_symbol(code, "my"):
+        return "my"
     return "cn"
 
 
