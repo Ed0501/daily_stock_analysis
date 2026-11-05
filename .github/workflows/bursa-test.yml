@@ -2,6 +2,8 @@
 name: Bursa Malaysia Test
 
 on:
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -16,10 +18,15 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install test dependencies
+      - name: Install dependencies
         run: |
           python -m pip install -r .github/requirements-ci.txt
+          python -m pip install yfinance
 
-      - name: Run Bursa tests
+      - name: Run Bursa offline tests
         run: |
           python -m pytest tests/test_bursa_market.py -q
+
+      - name: Check live Bursa market data
+        run: |
+          python tests/test_bursa_live.py
