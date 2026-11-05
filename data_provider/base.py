@@ -140,6 +140,10 @@ def normalize_stock_code(stock_code: str) -> str:
             return f"{base}.{suffix.upper()}"
         if suffix.upper() in ('TW', 'TWO') and base.isdigit() and 4 <= len(base) <= 6:
             return f"{base}.{suffix.upper()}"
+            
+        if suffix.upper() == 'KL' and base.isdigit() and len(base) in (4, 5):
+            return f"{base}.KL"
+
         if suffix.upper() == 'HK' and base.isdigit() and 1 <= len(base) <= 5:
             return f"HK{base.zfill(5)}"
         if base.upper() in ('SH', 'SS', 'SZ', 'BJ') and suffix.isdigit():
@@ -252,6 +256,8 @@ def _market_tag(code: str) -> str:
         return "kr"
     if _is_tw_market(code):
         return "tw"
+    if is_suffix_market_symbol(code, "my"):
+        return "my"
     return "cn"
 
 
@@ -641,7 +647,7 @@ class DataFetcherManager:
         "MiaoxiangFetcher": set(),
         "PytdxFetcher": {"cn"},
         "BaostockFetcher": {"cn"},
-        "YfinanceFetcher": {"cn", "hk", "us", "jp", "kr", "tw"},
+        "YfinanceFetcher": {"cn", "hk", "us", "jp", "kr", "tw", "my"},
         "LongbridgeFetcher": {"hk", "us"},
         "FutuFetcher": {"hk"},
         "FinnhubFetcher": {"us"},
@@ -1984,7 +1990,19 @@ class DataFetcherManager:
         is_jp = (not is_us) and (not is_hk) and _is_jp_market(stock_code)
         is_kr = (not is_us) and (not is_hk) and _is_kr_market(stock_code)
         is_tw = (not is_us) and (not is_hk) and _is_tw_market(stock_code)
-        market = "us" if is_us else "hk" if is_hk else "jp" if is_jp else "kr" if is_kr else "tw" if is_tw else "cn"
+        
+        is_tw = (not is_us) and (not is_hk) and _is_tw_market(stock_code)
+        is_my = is_suffix_market_symbol(stock_code, "my")
+        market = (
+            "us" if is_us else
+            "hk" if is_hk else
+            "jp" if is_jp else
+            "kr" if is_kr else
+            "tw" if is_tw else
+            "my" if is_my else
+            "cn"
+        )
+
         if market != "cn":
             fetchers = self._filter_daily_fetchers_for_market(fetchers, market)
         fetchers = self._filter_fetchers_by_capability(fetchers, capability="daily_data")

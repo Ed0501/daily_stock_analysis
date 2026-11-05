@@ -38,7 +38,17 @@ except ImportError:
     )
 
 # Market -> exchange code (exchange-calendars)
-MARKET_EXCHANGE = {"cn": "XSHG", "hk": "XHKG", "us": "XNYS", "jp": "XTKS", "kr": "XKRX", "tw": "XTAI"}
+
+MARKET_EXCHANGE = {
+    "cn": "XSHG",
+    "hk": "XHKG",
+    "us": "XNYS",
+    "jp": "XTKS",
+    "kr": "XKRX",
+    "tw": "XTAI",
+    "my": "XKLS",
+}
+
 
 # Market -> IANA timezone for "today"
 MARKET_TIMEZONE = {
@@ -48,6 +58,8 @@ MARKET_TIMEZONE = {
     "jp": "Asia/Tokyo",
     "kr": "Asia/Seoul",
     "tw": "Asia/Taipei",
+    "my": "Asia/Kuala_Lumpur",
+
 }
 
 # P0 market phase baseline (Issue #1386). This is an intentionally small
@@ -425,6 +437,22 @@ def infer_market_phase(
             break_start = _as_market_datetime(cal.session_break_start(session), tz_name)
             break_end = _as_market_datetime(cal.session_break_end(session), tz_name)
 
+        # Bursa Malaysia lunch-break fallback.
+        # XKLS calendar may not expose intraday break timestamps.
+        if market == "my" and (
+            break_start is None or break_end is None
+        ):
+            local_minutes = market_now.hour * 60 + market_now.minute
+            if 12 * 60 + 30 <= local_minutes < 14 * 60 + 30:
+                return MarketPhase.LUNCH_BREAK
+
+
+
+
+
+
+
+        
         window_minutes = _CLOSING_AUCTION_WINDOW_MINUTES.get(market, 0)
         closing_window_start = session_close - timedelta(minutes=window_minutes)
 
