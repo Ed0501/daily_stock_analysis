@@ -64,3 +64,20 @@ def test_bursa_trading_calendar_config():
     for symbol in ("4456.KL", "5323.KL", "8524.KL"):
         assert get_market_for_stock(symbol) == "my"
 
+
+def test_bursa_lunch_break():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from src.core.trading_calendar import (
+        infer_market_phase,
+        MarketPhase,
+    )
+
+    lunchtime = datetime(
+        2026, 11, 5, 13, 0,
+        tzinfo=ZoneInfo("Asia/Kuala_Lumpur"),
+    )
+
+    assert infer_market_phase(
+        "my", current_time=lunchtime
+    ) == MarketPhase.LUNCH_BREAK
